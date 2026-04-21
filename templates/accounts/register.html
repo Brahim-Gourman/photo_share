@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="background:white; border:1px solid #dbdbdb; border-radius:10px; padding:40px; max-width:380px; margin:50px auto;">
+    
+    <h1 style="text-align:center; font-family:'Georgia',serif; font-size:32px; margin-bottom:25px;">PhotoShare</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div style="margin-bottom:12px;">
+            <input type="{{ field.field.widget.input_type }}" 
+                name="{{ field.html_name }}" 
+                placeholder="{{ field.label }}"
+                style="width:100%; padding:10px; border:1px solid #dbdbdb; border-radius:8px; font-size:14px; outline:none; background:#fafafa;">
+            {% if field.errors %}
+                <p style="color:#ed4956; font-size:12px; margin-top:4px;">{{ field.errors|join:", " }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit"
+            style="width:100%; background:#0095f6; color:white; border:none; padding:10px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;">
+            S'inscrire
+        </button>
+    </form>
+
+    <div style="text-align:center; margin-top:20px; padding-top:20px; border-top:1px solid #dbdbdb;">
+        <p style="font-size:14px; color:#262626;">
+            Déjà un compte ? 
+            <a href="{% url 'login' %}" style="color:#0095f6; font-weight:600; text-decoration:none;">Se connecter</a>
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

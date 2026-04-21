@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for photo in photos %}
+<div style="background:white; border:1px solid #dbdbdb; border-radius:10px; margin-bottom:25px;">
+    
+    <!-- Header -->
+    <div style="padding:12px 16px; display:flex; align-items:center; gap:10px;">
+        <div style="width:35px; height:35px; border-radius:50%; background:#0095f6; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
+            {{ photo.user.username|first|upper }}
+        </div>
+        <strong>{{ photo.user.username }}</strong>
+        <span style="margin-left:auto; color:#8e8e8e; font-size:12px;">{{ photo.created_at|date:"d M Y" }}</span>
+        {% if photo.user == request.user %}
+            <a href="{% url 'delete' photo.id %}" style="color:#ed4956; font-size:12px; text-decoration:none;">🗑 Supprimer</a>
+        {% endif %}
+    </div>
+
+    <!-- Image -->
+    <img src="{{ photo.image.url }}" style="width:100%; max-height:600px; object-fit:cover;">
+
+    <!-- Actions -->
+    <div style="padding:12px 16px;">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:8px;">
+            <a href="{% url 'like' photo.id %}" style="text-decoration:none; font-size:22px;">
+                {% if photo.id in liked_photos %}❤️{% else %}🤍{% endif %}
+            </a>
+            <span style="font-weight:600; font-size:14px;">{{ photo.like_set.count }} likes</span>
+        </div>
+
+        <!-- Caption -->
+        {% if photo.caption %}
+        <p style="font-size:14px; margin-bottom:8px;">
+            <strong>{{ photo.user.username }}</strong> {{ photo.caption }}
+        </p>
+        {% endif %}
+
+        <!-- Comments -->
+        {% for comment in photo.comment_set.all %}
+        <p style="font-size:14px; color:#262626; margin-bottom:4px;">
+            <strong>{{ comment.user.username }}</strong> {{ comment.text }}
+        </p>
+        {% endfor %}
+
+        <!-- Add Comment -->
+        <form method="POST" action="{% url 'comment' photo.id %}" style="display:flex; gap:8px; margin-top:10px; border-top:1px solid #efefef; padding-top:10px;">
+            {% csrf_token %}
+            <input type="text" name="text" placeholder="Ajouter un commentaire..." 
+                style="flex:1; border:none; outline:none; font-size:14px; background:transparent;">
+            <button type="submit" style="background:none; border:none; color:#0095f6; font-weight:600; cursor:pointer; font-size:14px;">Publier</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<div style="text-align:center; padding:60px; color:#8e8e8e;">
+    <p style="font-size:18px;">Aucune photo pour le moment 📷</p>
+    <a href="{% url 'upload' %}" style="color:#0095f6; font-weight:600;">Publiez la première !</a>
+</div>
+{% endfor %}
+
+{% endblock %}
